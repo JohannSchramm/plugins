@@ -59,9 +59,11 @@
                 }];
     [alert addAction:additionalAction];
   }
-  [[UIApplication sharedApplication].delegate.window.rootViewController presentViewController:alert
-                                                                                     animated:YES
-                                                                                   completion:nil];
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [[UIApplication sharedApplication].delegate.window.rootViewController presentViewController:alert
+                                                                                       animated:YES
+                                                                                     completion:nil];
+  });
 }
 
 - (void)getAvailableBiometrics:(FlutterResult)result {
@@ -144,11 +146,15 @@
       errorCode = authError.code == LAErrorPasscodeNotSet ? @"PasscodeNotSet" : @"NotEnrolled";
       break;
     case LAErrorTouchIDLockout:
-      [self alertMessage:arguments[@"lockOut"]
+      if ([arguments[@"useErrorDialogs"] boolValue]) {
+        [self alertMessage:arguments[@"lockOut"]
                firstButton:arguments[@"okButton"]
              flutterResult:result
           additionalButton:nil];
-      return;
+        return;
+      }
+      errorCode = @"PermanentlyLockedOut";
+      break;
   }
   result([FlutterError errorWithCode:errorCode
                              message:authError.localizedDescription

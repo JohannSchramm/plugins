@@ -1,3 +1,8 @@
+## 0.6.1+5
+
+* Made `TouchIDLockout` alert optional
+* Fixed iOS `TouchIDLockout` crash
+
 ## 0.6.1+4
 
 * Replace deprecated `getFlutterEngine` call on Android.
